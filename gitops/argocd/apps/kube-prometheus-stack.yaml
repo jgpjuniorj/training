@@ -34,5 +34,8 @@ spec:
     syncOptions:
       - CreateNamespace=true
       # this chart's CRDs (Prometheus, Alertmanager, ...) exceed the 262144-byte
-      # last-applied-configuration annotation limit for client-side apply.
+      # last-applied-configuration annotation limit for client-side apply;
+      # ServerSideApply alone wasn't honored for CRDs on this ArgoCD version, so
+      # fall back to Replace (safe here since CRDs carry no data of their own).
       - ServerSideApply=true
+      - Replace=true
