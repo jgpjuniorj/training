@@ -8,15 +8,13 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://istio-release.storage.googleapis.com/charts
-    chart: gateway
-    targetRevision: 1.24.6
-    # NOTE: pinned to a newer patch than istiod (1.23.2) because gateway chart 1.23.2's
-    # values.schema.json is incompatible with the Helm engine used by ArgoCD's repo-server
-    # (rejects the chart's own built-in "defaults" key). The gateway chart is standalone
-    # and safe to run at a slightly newer version than istiod for this demo environment.
-    helm:
-      skipCrds: true
+    repoURL: https://github.com/jgpjuniorj/training.git
+    targetRevision: main
+    path: vendor-charts/istio-gateway
+    # NOTE: vendored locally (values.schema.json removed) because the upstream chart's
+    # schema rejects its own internal "_internal_defaults_do_not_set" key under the
+    # stricter Helm v4 engine bundled with recent ArgoCD versions (repo-server uses
+    # Helm v4, which is stricter than the Helm v3 CLI used locally for development).
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system
