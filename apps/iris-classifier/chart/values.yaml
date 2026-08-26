@@ -12,7 +12,11 @@ service:
 
 gateway:
   enabled: true
-  host: "*"
+  # NOTE: must be a concrete host, not "*" - Istio's validation webhook rejects a
+  # wildcard host on a VirtualService that is also bound to the implicit "mesh"
+  # gateway (used here for in-mesh calls to the FQDN). Use this Host header when
+  # calling through the ingress gateway, e.g. curl -H "Host: iris.kiale.local" ...
+  host: "iris.kiale.local"
 
 # two versions of the same app so we can demo Istio weighted traffic-splitting
 # and see both nodes/edges live in the Kiali graph.

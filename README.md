@@ -78,7 +78,17 @@ Quando tudo estiver `Synced`/`Healthy`, abra os acessos locais:
 | Kiali      | http://localhost:20001         | anônimo (demo) |
 | Grafana    | http://localhost:3000          | `admin` / `prom-operator` |
 | Prometheus | http://localhost:9090          | — |
-| Iris demo  | http://localhost:8080          | — |
+| Iris demo  | http://localhost:8080 (header `Host: iris.kiale.local`) | — |
+
+Exemplo de chamada ao demo via Istio ingress gateway (precisa do header `Host`, já que o
+Gateway/VirtualService usam um host concreto em vez de wildcard - exigência do webhook de
+validação do Istio):
+```bash
+curl -H "Host: iris.kiale.local" http://localhost:8080/healthz
+curl -H "Host: iris.kiale.local" -X POST http://localhost:8080/predict \
+  -H 'Content-Type: application/json' \
+  -d '{"sepal_length":5.1,"sepal_width":3.5,"petal_length":1.4,"petal_width":0.2}'
+```
 
 Parar os port-forwards: `./scripts/stop-port-forward.sh`
 Derrubar tudo: `./scripts/down.sh`
