@@ -10,9 +10,11 @@ spec:
   source:
     repoURL: https://istio-release.storage.googleapis.com/charts
     chart: gateway
-    targetRevision: 1.23.2
-    # NOTE: this chart validates values against a strict JSON schema; extra top-level
-    # keys (service/resources/defaults) are rejected, so we keep the defaults as-is.
+    targetRevision: 1.24.6
+    # NOTE: pinned to a newer patch than istiod (1.23.2) because gateway chart 1.23.2's
+    # values.schema.json is incompatible with the Helm engine used by ArgoCD's repo-server
+    # (rejects the chart's own built-in "defaults" key). The gateway chart is standalone
+    # and safe to run at a slightly newer version than istiod for this demo environment.
     helm:
       skipCrds: true
   destination:
