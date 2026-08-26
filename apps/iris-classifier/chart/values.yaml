@@ -16,19 +16,21 @@ gateway:
 
 # two versions of the same app so we can demo Istio weighted traffic-splitting
 # and see both nodes/edges live in the Kiali graph.
+# memory limits are generous for such a tiny model because scikit-learn/numpy/scipy
+# alone need ~150-250Mi RSS at import time - anything lower gets OOMKilled (exit 137).
 versions:
   - name: v1
     weight: 90
     replicas: 2
     resources:
-      requests: { cpu: 50m, memory: 64Mi }
-      limits: { cpu: 250m, memory: 128Mi }
+      requests: { cpu: 100m, memory: 256Mi }
+      limits: { cpu: 500m, memory: 512Mi }
   - name: v2
     weight: 10
     replicas: 1
     resources:
-      requests: { cpu: 100m, memory: 128Mi }
-      limits: { cpu: 500m, memory: 256Mi }
+      requests: { cpu: 150m, memory: 256Mi }
+      limits: { cpu: 750m, memory: 512Mi }
 
 serviceMonitor:
   enabled: true
