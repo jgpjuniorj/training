@@ -33,3 +33,6 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      # this chart's CRDs (Prometheus, Alertmanager, ...) exceed the 262144-byte
+      # last-applied-configuration annotation limit for client-side apply.
+      - ServerSideApply=true
