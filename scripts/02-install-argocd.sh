@@ -8,7 +8,10 @@ need_cmd kubectl
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 
 log "installing argocd (official stable manifest)"
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+# --server-side avoids the "metadata.annotations: Too long" error some argocd CRDs hit
+# with the classic client-side last-applied-configuration annotation.
+kubectl apply -n argocd --server-side --force-conflicts \
+  -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 wait_for_deploy argocd argocd-server 300s
 wait_for_deploy argocd argocd-repo-server 300s
