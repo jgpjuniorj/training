@@ -1,0 +1,24 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: iris-classifier
+  namespace: {{ .Values.namespace }}
+spec:
+  hosts:
+    - iris-classifier.{{ .Values.namespace }}.svc.cluster.local
+    {{- if .Values.gateway.enabled }}
+    - {{ .Values.gateway.host | quote }}
+    {{- end }}
+  gateways:
+    {{- if .Values.gateway.enabled }}
+    - iris-classifier
+    {{- end }}
+    - mesh
+  http:
+    - route:
+        {{- range .Values.versions }}
+        - destination:
+            host: iris-classifier.{{ $.Values.namespace }}.svc.cluster.local
+            subset: {{ .name }}
+          weight: {{ .weight }}
+        {{- end }}

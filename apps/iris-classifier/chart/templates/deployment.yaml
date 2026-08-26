@@ -1,0 +1,42 @@
+{{- range .Values.versions }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iris-classifier-{{ .name }}
+  namespace: {{ $.Values.namespace }}
+  labels:
+    {{- include "iris.labels" $ | nindent 4 }}
+    version: {{ .name }}
+spec:
+  replicas: {{ .replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "iris.name" $ }}
+      version: {{ .name }}
+  template:
+    metadata:
+      labels:
+        {{- include "iris.labels" $ | nindent 8 }}
+        version: {{ .name }}
+    spec:
+      containers:
+        - name: iris-classifier
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          env:
+            - name: MODEL_VERSION
+              value: {{ .name }}
+          ports:
+            - containerPort: {{ $.Values.service.targetPort }}
+          readinessProbe:
+            httpGet: { path: /healthz, port: {{ $.Values.service.targetPort }} }
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /healthz, port: {{ $.Values.service.targetPort }} }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            {{- toYaml .resources | nindent 12 }}
+---
+{{- end }}

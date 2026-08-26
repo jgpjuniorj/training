@@ -1,0 +1,17 @@
+{{- if .Values.gateway.enabled }}
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: iris-classifier
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - {{ .Values.gateway.host | quote }}
+{{- end }}

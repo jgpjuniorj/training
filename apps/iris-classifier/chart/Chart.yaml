@@ -1,0 +1,6 @@
+apiVersion: v2
+name: iris-classifier
+description: Tiny scikit-learn Iris classifier demo, two versions for Istio canary routing
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

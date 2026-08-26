@@ -1,0 +1,24 @@
+# OS / editor
+.DS_Store
+*.swp
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+apps/*/venv/
+
+# Terraform-like local state (not used here, but safe)
+*.tfstate*
+
+# Local kube/helm artifacts
+*.kubeconfig
+.kube/
+
+# Port-forward pid/log files
+/tmp/
+scripts/.pids/
+*.log
+
+# ArgoCD/Helm local downloads
+.tools/

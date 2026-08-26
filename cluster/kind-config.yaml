@@ -1,0 +1,9 @@
+# kind cluster topology: 1 control-plane + 2 workers, enough headroom for
+# istio + kube-prometheus-stack + kiali + argocd + the demo app.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: kiale
+nodes:
+  - role: control-plane
+  - role: worker
+  - role: worker

@@ -1,0 +1,41 @@
+image:
+  repository: iris-classifier
+  tag: local
+  pullPolicy: IfNotPresent
+
+namespace: iris-demo
+createNamespace: true
+
+service:
+  port: 80
+  targetPort: 8000
+
+gateway:
+  enabled: true
+  host: "*"
+
+# two versions of the same app so we can demo Istio weighted traffic-splitting
+# and see both nodes/edges live in the Kiali graph.
+versions:
+  - name: v1
+    weight: 90
+    replicas: 2
+    resources:
+      requests: { cpu: 50m, memory: 64Mi }
+      limits: { cpu: 250m, memory: 128Mi }
+  - name: v2
+    weight: 10
+    replicas: 1
+    resources:
+      requests: { cpu: 100m, memory: 128Mi }
+      limits: { cpu: 500m, memory: 256Mi }
+
+serviceMonitor:
+  enabled: true
+  interval: 15s
+
+hpa:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70

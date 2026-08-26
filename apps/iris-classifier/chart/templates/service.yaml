@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: iris-classifier
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "iris.labels" . | nindent 4 }}
+spec:
+  selector:
+    app.kubernetes.io/name: {{ include "iris.name" . }}
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}

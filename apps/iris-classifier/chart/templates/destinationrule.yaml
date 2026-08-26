@@ -1,0 +1,13 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: iris-classifier
+  namespace: {{ .Values.namespace }}
+spec:
+  host: iris-classifier.{{ .Values.namespace }}.svc.cluster.local
+  subsets:
+    {{- range .Values.versions }}
+    - name: {{ .name }}
+      labels:
+        version: {{ .name }}
+    {{- end }}
