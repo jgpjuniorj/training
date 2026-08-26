@@ -13,6 +13,8 @@ spec:
     targetRevision: 1.23.2
     # NOTE: this chart validates values against a strict JSON schema; extra top-level
     # keys (service/resources/defaults) are rejected, so we keep the defaults as-is.
+    helm:
+      skipCrds: true
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system
