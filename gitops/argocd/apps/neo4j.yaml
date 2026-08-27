@@ -35,6 +35,11 @@ spec:
     server: https://kubernetes.default.svc
     namespace: neo4j
   syncPolicy:
+    # auto-label the namespace for Istio sidecar injection so Envoy captures
+    # HTTP (7474)/TCP (7687) traffic automatically — no exporter needed on Neo4j itself.
+    managedNamespaceMetadata:
+      labels:
+        istio-injection: enabled
     automated:
       prune: true
       selfHeal: true

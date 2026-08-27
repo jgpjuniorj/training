@@ -143,3 +143,10 @@ Reconstruir a imagem após alterar o código:
 - O Neo4j sobe como instância standalone (Community Edition, chart oficial `neo4j/neo4j`),
   sem service `LoadBalancer` (kind não tem provisionador de LB) — o acesso é só via
   `kubectl port-forward` (feito por `scripts/port-forward.sh`).
+- Observabilidade automática do Neo4j: o namespace `neo4j` recebe `istio-injection: enabled`
+  (via `managedNamespaceMetadata` no Application do Argo CD), então o sidecar Envoy captura
+  métricas HTTP (porta 7474) e TCP (porta 7687/bolt) sem precisar de exporter — aparece
+  sozinho no Kiali e no Prometheus/Grafana, igual aos demais serviços do mesh.
+  ([Pixie](https://docs.px.dev/) foi avaliado para essa automação, mas [não é suportado em
+  `kind`](https://docs.px.dev/installing-pixie/requirements/) — o cluster roda como container
+  Docker, não uma VM/kernel dedicado, que é o que o eBPF do Pixie exige.)
