@@ -23,6 +23,7 @@ graph TD
         ArgoCD -->|sync| Prom[kube-prometheus-stack]
         ArgoCD -->|sync| Kiali[kiali]
         ArgoCD -->|sync| Iris[iris-classifier v1 + v2]
+        ArgoCD -->|sync| Neo4j[neo4j]
 
         Gateway --> VS[VirtualService 90/10]
         VS --> V1[iris-classifier-v1]
@@ -79,6 +80,7 @@ Quando tudo estiver `Synced`/`Healthy`, abra os acessos locais:
 | Grafana    | http://localhost:3000          | `admin` / `prom-operator` |
 | Prometheus | http://localhost:9090          | — |
 | Iris demo  | http://localhost:8080 (header `Host: iris.kiale.local`) | — |
+| Neo4j      | http://localhost:7474 (browser) / bolt://localhost:7687 | `neo4j` / `kiale12345` |
 
 Exemplo de chamada ao demo via Istio ingress gateway (precisa do header `Host`, já que o
 Gateway/VirtualService usam um host concreto em vez de wildcard - exigência do webhook de
@@ -92,6 +94,24 @@ curl -H "Host: iris.kiale.local" -X POST http://localhost:8080/predict \
 
 Parar os port-forwards: `./scripts/stop-port-forward.sh`
 Derrubar tudo: `./scripts/down.sh`
+
+### Consumindo o Neo4j a partir do Windows (ex.: Backstage em localhost:3000)
+
+Como o cluster kind roda dentro do WSL, o `kubectl port-forward` do `neo4j` (feito por
+`scripts/port-forward.sh`) escuta em `127.0.0.1` **dentro do WSL**. O WSL2 encaminha
+automaticamente portas de `127.0.0.1` para o Windows ("localhost forwarding"), então uma
+aplicação rodando nativamente no Windows — como o Backstage em `http://localhost:3000` —
+consegue acessar o Neo4j normalmente em:
+
+- HTTP/Browser: `http://localhost:7474`
+- Bolt: `bolt://localhost:7687` (usuário `neo4j`, senha `kiale12345`)
+
+Basta manter `./scripts/port-forward.sh` rodando (ele já inclui o forward do Neo4j) enquanto
+o Backstage estiver em uso. Se o plugin de catálogo/graph do Backstage pedir a URL de conexão,
+use `bolt://localhost:7687`.
+
+> A senha é fixada em `gitops/argocd/apps/neo4j.yaml` (`neo4j.password`) só para fins de demo —
+> troque-a se for expor o serviço além do localhost.
 
 ## Sobre o repositório remoto
 
@@ -116,7 +136,10 @@ Reconstruir a imagem após alterar o código:
 
 ## Notas
 
-- Versões de chart do Istio/kube-prometheus-stack/Kiali em `gitops/argocd/apps/*.yaml` estão
-  fixadas; ajuste `targetRevision` se quiser versões mais novas.
+- Versões de chart do Istio/kube-prometheus-stack/Kiali/Neo4j em `gitops/argocd/apps/*.yaml`
+  estão fixadas; ajuste `targetRevision` se quiser versões mais novas.
 - `iris-demo` namespace recebe o label `istio-injection: enabled` — os pods do app sobem com
   sidecar Envoy automaticamente.
+- O Neo4j sobe como instância standalone (Community Edition, chart oficial `neo4j/neo4j`),
+  sem service `LoadBalancer` (kind não tem provisionador de LB) — o acesso é só via
+  `kubectl port-forward` (feito por `scripts/port-forward.sh`).

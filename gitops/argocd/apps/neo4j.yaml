@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: neo4j
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  project: default
+  source:
+    repoURL: https://helm.neo4j.com/neo4j
+    chart: neo4j
+    targetRevision: 5.26.30
+    helm:
+      values: |
+        neo4j:
+          name: kiale
+          # demo-only password (Neo4j refuses the literal "neo4j" default value).
+          password: "kiale12345"
+          resources:
+            cpu: "0.5"
+            memory: "2Gi"
+        volumes:
+          data:
+            mode: "defaultStorageClass"
+            defaultStorageClass:
+              requests:
+                storage: "1Gi"
+        services:
+          # disable the LoadBalancer service — kind has no cloud LB provisioner;
+          # access is via `kubectl port-forward` on the ClusterIP "neo4j" service instead.
+          neo4j:
+            enabled: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: neo4j
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
