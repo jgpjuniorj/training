@@ -1,0 +1,14 @@
+{
+  // OpenAI-compatible base for local proxy
+  "openai.apiBase": "http://localhost:11435/v1",
+  "openai.apiKey": "local-testkey-001",
+  "openai.defaultModel": "qwen2.5-coder:7b",
+
+  // Some extensions look for these names too
+  "rest-client.environmentVariables": {
+    "$shared": {
+      "OPENAI_API_BASE": "http://localhost:11435/v1",
+      "OPENAI_API_KEY": "local-testkey-001"
+    }
+  }
+}

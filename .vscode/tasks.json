@@ -1,0 +1,35 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Proxy: docker-compose up",
+      "type": "shell",
+      "command": "wsl -e bash -lc 'cd /mnt/c/training/local-openai-proxy && docker compose up -d'",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Proxy: docker-compose down",
+      "type": "shell",
+      "command": "wsl -e bash -lc 'cd /mnt/c/training/local-openai-proxy && docker compose down'",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Proxy: logs (tail)",
+      "type": "shell",
+      "command": "wsl -e bash -lc 'docker logs -f local-openai-proxy-proxy-1'",
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "Ollama: serve (background)",
+      "type": "shell",
+      "command": "wsl -e bash -lc 'nohup ollama serve >/tmp/ollama.log 2>&1 &'",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Ollama: tail logs",
+      "type": "shell",
+      "command": "wsl -e bash -lc 'tail -n 200 /tmp/ollama.log'",
+      "presentation": { "reveal": "always", "panel": "new" }
+    }
+  ]
+}
